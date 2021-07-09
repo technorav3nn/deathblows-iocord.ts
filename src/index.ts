@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 const ws: WebSocket = new WebSocket("wss://gateway.discord.gg/?v=9&encoding=json");
 
-const token: string = "ODYxMjcxNjM2OTA3OTE3MzIy.YOHXtw.PPC_cIndeDOhQeI57FxUwDNG4m0";
+const token: string = "bruh token was here.........";
 const payload: object = {
   op: 2,
   d: {
