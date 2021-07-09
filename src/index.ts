@@ -65,7 +65,7 @@ async function createMessage(channelID: number, content: string) {
       tts: false,
     }),
   });
-  const json = res.json();
 
+  const json = res.json();
   return json;
 }
