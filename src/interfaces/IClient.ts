@@ -1,3 +1,8 @@
-export default interface Client {
-  readonly token: string;
+import IRestClient from "./IRestClient";
+
+export interface IClient {
+    readonly token: string;
+    readonly isConnected: boolean;
+
+    restClient: IRestClient;
 }
