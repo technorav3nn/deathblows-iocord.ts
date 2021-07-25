@@ -4,6 +4,7 @@
     "@types/simple-websocket": "^7.0.2",
     "node-fetch": "^2.6.1",
     "simple-websocket": "^9.1.0",
+    "tslib": "^2.3.0",
     "ws": "^7.5.2"
   },
   "devDependencies": {
