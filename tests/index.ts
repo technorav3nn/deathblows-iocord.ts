@@ -1,7 +1,7 @@
 import { Client } from "../src/index";
 
 const client = new Client({
-    token: "ODYxMjcxNjM2OTA3OTE3MzIy.YOHXtw.hHPn529Mk-WBdrSTsRpr4MQlqVQ",
+    token: "token",
 });
 
 client.on("ready", () => {
@@ -9,8 +9,17 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", (message) => {
-    if (message.content === "ass") {
-        client.send(message.channel_id, "ass!!");
+    if (message.author.bot) return;
+    if (message.content === "!info") {
+        client.send(message.channel_id, {
+            content: "\u200b",
+            embeds: [
+                {
+                    title: "ass",
+                    description: `Your name is ${message.author.username}`,
+                },
+            ],
+        });
     }
 });
 
