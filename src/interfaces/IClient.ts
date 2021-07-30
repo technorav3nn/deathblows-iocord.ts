@@ -2,6 +2,7 @@ import IRestClient from "./IRestClient";
 import WebSocket from "ws";
 
 import EventEmitter from "events";
+import Cache from "../structures/Cache";
 
 export interface IClient {
     [x: string]: any;
@@ -11,5 +12,8 @@ export interface IClient {
     isConnected: boolean;
 
     ws: WebSocket;
-    restClient: IRestClient;
+    rest: IRestClient;
+    cache: Cache;
+
+    connect(): void;
 }

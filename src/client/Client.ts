@@ -2,14 +2,26 @@ import { EventEmitter } from "events";
 import { IClient } from "../interfaces/IClient";
 import IRestClient from "../interfaces/IRestClient";
 import RestClient from "../RestClient";
+import {
+    APIChannel,
+    APIMessage,
+    RESTPostAPIChannelMessageJSONBody,
+    RESTPostAPIChannelMessageResult,
+    Snowflake,
+} from "discord-api-types";
 import { Websocket as ws } from "../Websocket";
+import Cache from "../structures/Cache";
+import Message from "../structures/Message";
+import TextBasedChannel from "../structures/TextBasedChannel";
 
 class Client extends EventEmitter implements IClient {
     public token: string;
     public isConnected: boolean;
 
-    restClient: IRestClient;
-    ws: any;
+    public rest: IRestClient;
+    public ws: any;
+
+    public cache: Cache;
 
     [x: string]: any;
 
@@ -17,7 +29,8 @@ class Client extends EventEmitter implements IClient {
         super();
 
         this.token = opts.token;
-        this.restClient = new RestClient(this);
+        this.rest = new RestClient(this);
+        this.cache = new Cache(this.rest, this.ws);
 
         this.ws = null;
         this.isConnected = false;
@@ -28,15 +41,23 @@ class Client extends EventEmitter implements IClient {
         this.ws = new ws(this);
     }
 
-    async send(id: number, message: string) {
-        const res = await this.restClient.post(`/channels/${id}/messages`, {
-            message,
-        });
-        return res;
+    async send(id: Snowflake, ...options: RESTPostAPIChannelMessageJSONBody[]) {
+        const res: APIMessage = await this.rest
+            .post(`/channels/${id}/messages`, ...options)
+            .catch(console.error);
+
+        return new Message({ client: this.client, data: res });
     }
 
     kill() {
         this.ws.close();
+    }
+
+    get messages() {
+        return this.cache.messages;
+    }
+    get channels() {
+        return this.cache.channels;
     }
 }
 

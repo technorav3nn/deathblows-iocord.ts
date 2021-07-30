@@ -2,15 +2,19 @@ import EventEmitter from "events";
 import WebSocket from "ws";
 import { IClient } from "./interfaces/IClient";
 import { GatewayOpCodes as Opcodes } from "./enums/GATEWAY_OPS";
+import Message from "./structures/Message";
+import { Client } from "./client/Client";
+import { APIChannel, APIMessage } from "discord-api-types";
+import TextBasedChannel from "./structures/TextBasedChannel";
 
 export class Websocket extends EventEmitter {
-    public client: IClient;
+    public client: Client;
     public isConnected: boolean;
     private ws: WebSocket;
     public lastEvent: string | object;
     public lastHeartBeat: number;
 
-    constructor(client: IClient) {
+    constructor(client: Client) {
         super();
         this.ws = null;
         this.client = client;
@@ -58,11 +62,11 @@ export class Websocket extends EventEmitter {
 
         // Begin gateway
 
-        this.ws.on("message", (message: any) => {
-            console.log("Iocord: got message from ws", message);
-
+        this.ws.on("message", async (message: any) => {
             const res = JSON.parse(message);
-            const { t, event, op, d } = res;
+            const { op, d, s, t } = res;
+
+            const msg: APIMessage = res;
 
             switch (op) {
                 case 10: {
@@ -72,17 +76,28 @@ export class Websocket extends EventEmitter {
                     break;
                 }
                 case 0: {
-                    switch (t) {
-                        case "READY":
-                            console.log("iocord: Client is ready!");
-                            this.send(1, this.lastEvent);
+                    if (t === "READY") {
+                        this.client.emit("ready", res.d);
+                        console.log("DEBUG: READY!");
+                    } else if (t === "MESSAGE_CREATE") {
+                        const MessageData = new Message({
+                            client: this.client,
+                            data: res.d,
+                        });
 
-                            this.client.emit("ready", d);
-                            break;
-                        case "MESSAGE_CREATE": {
-                            console.log("Got message create!");
-                            break;
+                        if (!this.client.cache.channels.has(msg.channel_id)) {
+                            const channel: APIChannel = await this.client.rest.get(
+                                `/channels/${res.d.channel_id}`
+                            );
+                            const CreatedChannel = new TextBasedChannel({
+                                client: this.client,
+                                data: channel,
+                            });
+                            this.client.cache.channels.set(res.d.channel_id, CreatedChannel);
                         }
+                        this.client.cache.messages.set(MessageData.id, MessageData);
+                        this.client.emit("messageCreate", res.d, MessageData);
+                        return;
                     }
                     break;
                 }

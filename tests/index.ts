@@ -10,31 +10,20 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", async (message, test: Message) => {
+    // messsage is raw api data, test is the message object
     if (message.author.bot) return;
-    if (message.content === "!info") {
-        client.send(message.channel_id, {
-            content: "\u200b",
-            embeds: [
-                {
-                    title: "ass",
-                    description: `Your name is ${message.author.username}`,
-                },
-            ],
-        });
-    }
-    console.log(test);
-    if (test.content === "!test") {
-        await test.reply({
-            content: "shitcock",
-            embeds: [
-                new EmbedBuilder({
-                    title: "Ass shit",
-                    description: "yo mama",
-                    color: 984444,
-                }).build(),
-            ],
-        });
+
+    if (test.content === "!getname") {
+        //test.reply({ content: "test" });
+        //console.log(client.cache.channels.size);
+        test.channel.send({ content: `The channel name is ${test.channel.name}` });
     }
 });
+
+function delay(ms: number) {
+    return new Promise((res, rej) => {
+        setTimeout(res, ms);
+    });
+}
 
 client.connect();
