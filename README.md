@@ -1,37 +1,52 @@
-# `iocord.ts`
-> *a new, and very simple discord library written in Typescript.*
 
-**WARNING: NOT RELEASED YET! VERY (possibly) BOILERPLATE & UNFINISED CODE AHEAD!**
+<h1 align="center">
+<code>iocord.ts</code>
+</h1>
 
-Repo: [technorav3nn/deathblows-iocord.ts: a wip discord library, currently very boilerplate. (github.com)](https://github.com/technorav3nn/deathblows-iocord.ts)
+<p align="center">
+<em>A simple, and new way to use the Discord API</em><br><br>
+<b >!!! WARNING: BOILERPLATE CODE AHEAD !!!
+</p>
 
-Currently able to:
-> Receive Messages
-> Send Messages
+## Todo
 
-*will be updated regularly*
+- Create guild class (almost done)
+- Add interactions
+- More gateway events
+- Efficient intent handling (no 513 lol)
+- Fix some bugs
+- JSDoc implementation
 
-Changes about to be finished (not pushed to main repo):
-> Client class: `Client`,
-> TextBasedChannel: `TextBasedChannel`
-> DiscordMessage: `DiscordMessage` ([Discord Developer Docs — Channel](https://discord.com/developers/docs/resources/channel#message-object))
+## Currently finished
 
-*Methods*
-> Client class (extends EventEmitter), implements IClient:
-* EVENTS:
-	* `messageCreate(DiscordMessage)`
-	* `More soon!`
-* `connect({ token: string }) -> Promise<void>`
-* `constructor:`
-	* `intents`: not done
-> TextBasedChannel class, implements ITextBasedChannel:
-* `createMessage(channelID, content) -> Promise<DiscordMessage> // WILL BE EDITED. channel.send()) is the desired method, for now we have this.`
-* `deleteMessage(channelID) -> Promise<DiscordMessage> (like createMessage, will be edited.)`
-> DiscordMessage class, implements IDiscordMessage:
-* read link above
+- Replying
+- Embed class
+- Channel object
+- Message object
+- Bunch of other stuff lol
 
-**NOT DONE!**
+## Examples
+*This isnt an actual package yet, fork the repo and try it out like this.*
+```ts
+import { Client, EmbedBuilder } from  "../src/index";
+import  Message  from  "../src/structures/Message";
 
-*Licensed under the MIT License*
+const  client = new  Client({
+	token:  "token here!!!",
+});
 
-*v0.01*
+client.on("ready", () => {
+	console.log("Ready!");
+});
+client.on("messageCreate", async (message, test: Message) => {
+// messsage is raw api data, test is the message object
+	if (message.author.bot) return;
+	if (test.content === "!getname") {
+		test.channel.send({ content:  `The channel name is ${test.channel.name}` });
+	}
+});
+```
+
+## Documentation
+
+*Not finished, sorry!*
