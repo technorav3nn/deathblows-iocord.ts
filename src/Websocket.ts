@@ -4,8 +4,12 @@ import { IClient } from "./interfaces/IClient";
 import { GatewayOpCodes as Opcodes } from "./enums/GATEWAY_OPS";
 import Message from "./structures/Message";
 import { Client } from "./client/Client";
-import { APIChannel, APIMessage } from "discord-api-types";
+import { APIChannel, APIGuild, APIMessage } from "discord-api-types";
 import TextBasedChannel from "./structures/TextBasedChannel";
+import IoCordAPIError from "./util/IoCordAPIError";
+import Guild from "./structures/Guild";
+import { User } from "./structures/User";
+import { GuildMember } from "./structures/GuildMember";
 
 export class Websocket extends EventEmitter {
     public client: Client;
@@ -89,12 +93,33 @@ export class Websocket extends EventEmitter {
                             const channel: APIChannel = await this.client.rest.get(
                                 `/channels/${res.d.channel_id}`
                             );
+                            const guild: APIGuild = await this.client.rest.get(
+                                `/guilds/${res.d.guild_id}`
+                            );
+
+                            if (channel.type === (1 || 2 || 3 || 10 || 11 || 12)) {
+                                throw new IoCordAPIError(
+                                    "Sorry, dm channels, threads and voice channels arent finished!"
+                                );
+                            }
                             const CreatedChannel = new TextBasedChannel({
                                 client: this.client,
                                 data: channel,
                             });
+                            const CreatedGuild = new Guild({ client: this.client, data: guild });
+
                             this.client.cache.channels.set(res.d.channel_id, CreatedChannel);
+                            this.client.cache.guilds.set(res.d.guild_id, CreatedGuild);
+
+                            if (!this.client.cache.users.has(res.d.author.id)) {
+                                const CreatedUser: User = new User(res.d.author, res.d.author.id);
+
+                                this.client.cache.users.set(res.d.author.id, CreatedUser);
+                            }
                         }
+                        const CreatedMember = new GuildMember(res.d.member, res.d.author.id);
+                        this.client.cache.members.set(res.d.author.id, CreatedMember);
+
                         this.client.cache.messages.set(MessageData.id, MessageData);
                         this.client.emit("messageCreate", res.d, MessageData);
                         return;

@@ -2,21 +2,23 @@ import { Client, EmbedBuilder } from "../src/index";
 import Message from "../src/structures/Message";
 
 const client = new Client({
-    token: "",
+    token: "ODYxMjcxNjM2OTA3OTE3MzIy.YOHXtw.u0zXrIk6LGJs-oKA_f1wMF8o8M8",
 });
 
 client.on("ready", () => {
     console.log("Ready!");
 });
 
-client.on("messageCreate", async (message, test: Message) => {
+client.on("messageCreate", async (raw, message: Message) => {
     // messsage is raw api data, test is the message object
-    if (message.author.bot) return;
+    if (raw.author.bot) return;
 
-    if (test.content === "!getname") {
-        //test.reply({ content: "test" });
-        //console.log(client.cache.channels.size);
-        test.channel.send({ content: `The channel name is ${test.channel.name}` });
+    if (message.content === "!getname") {
+        message.reply({
+            content: `${message.author.username} is your dsf! Joined server at ${new Date(
+                message.member.joinedAt
+            ).toLocaleDateString()}`,
+        });
     }
 });
 
