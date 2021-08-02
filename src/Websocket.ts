@@ -4,12 +4,24 @@ import { IClient } from "./interfaces/IClient";
 import { GatewayOpCodes as Opcodes } from "./enums/GATEWAY_OPS";
 import Message from "./structures/Message";
 import { Client } from "./client/Client";
-import { APIChannel, APIGuild, APIMessage } from "discord-api-types";
+import {
+    APIApplicationCommandInteractionData,
+    APIChannel,
+    APIGuild,
+    APIInteraction,
+    APIMessage,
+    APIMessageComponentInteractionData,
+    RESTPostAPIChannelMessageJSONBody,
+    Snowflake,
+} from "discord-api-types";
 import TextBasedChannel from "./structures/TextBasedChannel";
 import IoCordAPIError from "./util/IoCordAPIError";
 import Guild from "./structures/Guild";
 import { User } from "./structures/User";
 import { GuildMember } from "./structures/GuildMember";
+import IInteractionRes from "./interfaces/IInteractionRes";
+import { IMessageBody } from "./interfaces/IMessageBody";
+import Interaction from "./structures/interactions/Interaction";
 
 export class Websocket extends EventEmitter {
     public client: Client;
@@ -112,7 +124,11 @@ export class Websocket extends EventEmitter {
                             this.client.cache.guilds.set(res.d.guild_id, CreatedGuild);
 
                             if (!this.client.cache.users.has(res.d.author.id)) {
-                                const CreatedUser: User = new User(res.d.author, res.d.author.id);
+                                const CreatedUser: User = new User(
+                                    this.client,
+                                    res.d.author,
+                                    res.d.author.id
+                                );
 
                                 this.client.cache.users.set(res.d.author.id, CreatedUser);
                             }
@@ -123,6 +139,43 @@ export class Websocket extends EventEmitter {
                         this.client.cache.messages.set(MessageData.id, MessageData);
                         this.client.emit("messageCreate", res.d, MessageData);
                         return;
+                    } else if (t === "INTERACTION_CREATE") {
+                        const interaction: APIInteraction = res.d;
+                        const tokenAuth = interaction.token;
+
+                        const MessageInter = new Message({
+                            client: this.client,
+                            data: interaction.message,
+                        });
+                        const memberInter = this.client.cache.members.get(
+                            interaction.member.user.id
+                        );
+
+                        const guild: APIGuild = await this.client.rest.get(
+                            `/guilds/${interaction.guild_id}`
+                        );
+                        const toEmit = new Interaction(this.client, {
+                            message:
+                                this.client.messages.get(interaction.message.id) || MessageInter,
+                            member:
+                                this.client.cache.members.get(interaction.member.user.id) ||
+                                memberInter,
+                            id: interaction.id,
+                            guild:
+                                this.client.cache.guilds.get(guild.id) ||
+                                new Guild({ client: this.client, data: guild }),
+                            data: interaction.data,
+                            application: { id: interaction.application_id, token: tokenAuth },
+                            user:
+                                this.client.cache.users.get(interaction.member.user.id) ||
+                                new User(
+                                    this.client,
+                                    interaction.member.user,
+                                    interaction.member.user.id
+                                ),
+                        });
+
+                        this.client.emit("interactionCreate", toEmit);
                     }
                     break;
                 }

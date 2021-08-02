@@ -13,6 +13,7 @@ import { Websocket as ws } from "../Websocket";
 import Cache from "../structures/Cache";
 import Message from "../structures/Message";
 import TextBasedChannel from "../structures/TextBasedChannel";
+import { IMessageBody } from "../interfaces/IMessageBody";
 
 class Client extends EventEmitter implements IClient {
     public token: string;
@@ -41,12 +42,13 @@ class Client extends EventEmitter implements IClient {
         this.ws = new ws(this);
     }
 
-    async send(id: Snowflake, ...options: RESTPostAPIChannelMessageJSONBody[]) {
+    async send(id: Snowflake, ...options: IMessageBody[]) {
         const res: APIMessage = await this.rest
             .post(`/channels/${id}/messages`, ...options)
             .catch(console.error);
 
-        return new Message({ client: this.client, data: res });
+        const msg = new Message({ client: this.client, data: res });
+        return msg;
     }
 
     kill() {

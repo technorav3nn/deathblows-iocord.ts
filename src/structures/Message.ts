@@ -29,7 +29,7 @@ export default class Message extends IoStruct {
     public embeds: Array<object>;
     public flags: number;
     public type: number;
-    public author: User;
+    //public author: User;
 
     constructor({ client, data }: { client: Client; data: APIMessage }) {
         super(data.id);
@@ -45,7 +45,6 @@ export default class Message extends IoStruct {
         this.type = data.type;
 
         //this.member = client.cache.members.get(data.author.id);
-        this.author = new User(data.author, data.author.id);
 
         //this.channel =
     }
@@ -92,5 +91,12 @@ export default class Message extends IoStruct {
     }
     get member() {
         return this.client.cache.members.get(this.data.author.id);
+    }
+    get author() {
+        try {
+            return new User(this.client, this.data.author, this.data.author.id);
+        } catch {
+            return this.client.cache.users.get(this.data.author.id);
+        }
     }
 }

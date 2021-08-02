@@ -1,5 +1,6 @@
 import { APIChannel, RESTPostAPIChannelMessageJSONBody, Snowflake } from "discord-api-types";
 import { Client } from "../client/Client";
+import { IMessageBody } from "../interfaces/IMessageBody";
 import IoStruct from "./IoStruct";
 import Message from "./Message";
 
@@ -33,8 +34,8 @@ export default class TextBasedChannel extends IoStruct {
         // TODO: ADD GUILD!
     }
 
-    async send(...args: RESTPostAPIChannelMessageJSONBody[]) {
-        const res = await this.client.send(this.id, ...args).catch(console.error);
+    async send(args: IMessageBody) {
+        const res = await this.client.send(this.id, args).catch(console.error);
         return res;
     }
 

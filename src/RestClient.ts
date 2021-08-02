@@ -22,7 +22,7 @@ export default class RestClient implements IRestClient {
                 },
             });
             const json = await res.json();
-            //console.log(json.errors.channel_id._errors);
+            //console.log(json);
             return json;
         } catch (err) {
             return err;
@@ -74,6 +74,7 @@ export default class RestClient implements IRestClient {
                 body: JSON.stringify(data),
             });
             const json = await res.json();
+            console.log(json.errors.components["1"].components["0"].custom_id);
             return json;
         } catch (err) {
             return err;
