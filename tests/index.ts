@@ -1,11 +1,21 @@
-import { ComponentType } from "discord-api-types";
+import {
+    APIApplicationCommand,
+    APIApplicationCommandInteraction,
+    APIApplicationCommandInteractionData,
+    ApplicationCommandOptionType,
+    ComponentType,
+    InteractionType,
+    RESTPostAPIApplicationCommandsJSONBody,
+} from "discord-api-types";
 import { Client, EmbedBuilder } from "../src/index";
 import IInteractionRes from "../src/interfaces/IInteractionRes";
-import ButtonComponentBuilder from "../src/structures/interactions/ButtonComponentBuilder";
-import ComponentActionRowBuilder from "../src/structures/interactions/ComponentActionRowBuilder";
-import Interaction from "../src/structures/interactions/Interaction";
-import SelectMenuComponentBuilder from "../src/structures/interactions/SelectMenuComponentBuilder";
+import ButtonComponentBuilder from "../src/interfaces/interactions/ButtonComponentBuilder";
+import ComponentActionRowBuilder from "../src/interfaces/interactions/ActionRowComponentBuilder";
+import Interaction from "../src/interfaces/interactions/Interaction";
+import SelectMenuComponentBuilder from "../src/interfaces/interactions/SelectMenuComponentBuilder";
 import Message from "../src/structures/Message";
+import MessageComponentInteraction from "../src/interfaces/interactions/MessageComponentInteraction";
+import SlashCommandInteraction from "../src/interfaces/interactions/slash/SlashCommandInteraction";
 
 const client = new Client({
     token: "",
@@ -19,35 +29,56 @@ client.on("messageCreate", async (raw, message: Message) => {
     // messsage is raw api data, test is the message object
     if (message.author.bot) return;
 
-    const Row = new ComponentActionRowBuilder().addComponent(
-        new ButtonComponentBuilder().setStyle(3).setLabel("ass").setCustomId("test")
-    );
-    const Row2 = new ComponentActionRowBuilder().addComponent(
-        new SelectMenuComponentBuilder()
-            .addOption({
-                value: "ass",
-                description: "ass ttits",
-                label: "ass",
-            })
-            .setCustomId("ass")
-    );
+    const Row = new ComponentActionRowBuilder().addComponents([
+        new ButtonComponentBuilder().setCustomId("id1").setLabel("First").setStyle(1),
+        new ButtonComponentBuilder().setCustomId("id2").setLabel("Second").setStyle(2),
+        new ButtonComponentBuilder().setCustomId("id3").setLabel("Third").setStyle(3),
+        new ButtonComponentBuilder().setCustomId("id4").setLabel("Foruth").setStyle(4),
+    ]);
 
-    if (message.content === "!test") {
+    if (message.content === "!deploy") {
         await message.channel.send({
-            content: "test",
-            components: [Row, Row2],
+            content: `Deploying slash commands to guild.`,
         });
+
+        const commandData: RESTPostAPIApplicationCommandsJSONBody[] = [
+            {
+                name: "ping",
+                description: "A simple ping pong command!",
+            },
+            {
+                name: "say",
+                description: "say something back",
+                options: [
+                    {
+                        name: "input",
+                        description: "Enter a string for me to say!",
+                        type: ApplicationCommandOptionType.String,
+                        required: true,
+                    },
+                ],
+            },
+        ];
+        for (const command of commandData) {
+            message.guild.commands.create(command);
+            console.log(`Created command: ${command.name}`);
+        }
     }
 });
 
-client.on("interactionCreate", async (interaction: Interaction) => {
-    return interaction.reply({
-        data: {
-            content: "ass",
-            flags: 1 << 6,
-        },
-        type: 4,
-    });
+client.on("interactionCreate", async (interaction: SlashCommandInteraction) => {
+    if (!interaction.isApplicationCommand()) return;
+
+    if (interaction.commandName === "ping") {
+        return await interaction.reply({
+            content: `Ping! in ${(Date.now() - client.ws.lastHeartBeat) / 100}ms`,
+        });
+    }
+    if (interaction.commandName === "say") {
+        const input = interaction.commandOptions.getString("input");
+
+        return await interaction.reply({ content: `You said:\n\`${input.value}\`` });
+    }
 });
 
 function delay(ms: number) {
