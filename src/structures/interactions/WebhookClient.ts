@@ -1,7 +1,7 @@
 import { Snowflake } from "discord-api-types";
 import { Client } from "../..";
-import IInteractionReplyOptions from "../IInteractionReplyOptions";
-import Message from "../../structures/Message";
+import IInteractionReplyOptions from "../../interfaces/IInteractionReplyOptions";
+import Message from "../Message";
 
 export default class WebhookClient {
     public name: string;

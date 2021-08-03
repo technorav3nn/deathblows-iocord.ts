@@ -23,9 +23,9 @@ import { User } from "./structures/User";
 import { GuildMember } from "./structures/GuildMember";
 import IInteractionRes from "./interfaces/IInteractionRes";
 import { IMessageBody } from "./interfaces/IMessageBody";
-import Interaction from "./interfaces/interactions/Interaction";
-import MessageComponentInteraction from "./interfaces/interactions/MessageComponentInteraction";
-import SlashCommandInteraction from "./interfaces/interactions/slash/SlashCommandInteraction";
+import Interaction from "./structures/interactions/Interaction";
+import MessageComponentInteraction from "./structures/interactions/MessageComponentInteraction";
+import SlashCommandInteraction from "./structures/interactions/slash/SlashCommandInteraction";
 
 export class Websocket extends EventEmitter {
     public client: Client;

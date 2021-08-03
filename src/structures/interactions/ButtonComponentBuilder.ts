@@ -4,7 +4,7 @@ import {
     APIButtonComponentWithURL,
 } from "discord-api-types";
 import { Client } from "../..";
-import IInteractionRes from "../IInteractionRes";
+import IInteractionRes from "../../interfaces/IInteractionRes";
 import BaseComponent from "./BaseComponent";
 import Interaction from "./Interaction";
 

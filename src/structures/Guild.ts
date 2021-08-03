@@ -1,7 +1,7 @@
 import { APIGuild, RESTPostAPIApplicationCommandsResult, Snowflake } from "discord-api-types";
 import { Client } from "../client/Client";
 import { IoSet } from "../util/IoSet";
-import GuildSlashCommandManager from "../interfaces/interactions/slash/SlashCommandManager";
+import GuildSlashCommandManager from "./interactions/slash/SlashCommandManager";
 import IoStruct from "./IoStruct";
 import TextBasedChannel from "./TextBasedChannel";
 

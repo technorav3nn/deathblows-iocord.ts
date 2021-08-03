@@ -1,6 +1,6 @@
 import { APISelectMenuComponent, ComponentType } from "discord-api-types";
-import ISelectMenu from "../ISelectMenu";
-import ISelectMenuOption from "../ISelectMenuOption";
+import ISelectMenu from "../../interfaces/ISelectMenu";
+import ISelectMenuOption from "../../interfaces/ISelectMenuOption";
 import BaseComponent from "./BaseComponent";
 
 export default class SelectMenuComponentBuilder extends BaseComponent {

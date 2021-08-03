@@ -9,13 +9,13 @@ import {
 } from "discord-api-types";
 import { Client, EmbedBuilder } from "../src/index";
 import IInteractionRes from "../src/interfaces/IInteractionRes";
-import ButtonComponentBuilder from "../src/interfaces/interactions/ButtonComponentBuilder";
-import ComponentActionRowBuilder from "../src/interfaces/interactions/ActionRowComponentBuilder";
-import Interaction from "../src/interfaces/interactions/Interaction";
-import SelectMenuComponentBuilder from "../src/interfaces/interactions/SelectMenuComponentBuilder";
+import ButtonComponentBuilder from "../src/structures/interactions/ButtonComponentBuilder";
+import ComponentActionRowBuilder from "../src/structures/interactions/ActionRowComponentBuilder";
+import Interaction from "../src/structures/interactions/Interaction";
+import SelectMenuComponentBuilder from "../src/structures/interactions/SelectMenuComponentBuilder";
 import Message from "../src/structures/Message";
-import MessageComponentInteraction from "../src/interfaces/interactions/MessageComponentInteraction";
-import SlashCommandInteraction from "../src/interfaces/interactions/slash/SlashCommandInteraction";
+import MessageComponentInteraction from "../src/structures/interactions/MessageComponentInteraction";
+import SlashCommandInteraction from "../src/structures/interactions/slash/SlashCommandInteraction";
 
 const client = new Client({
     token: "",

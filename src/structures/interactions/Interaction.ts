@@ -14,14 +14,14 @@ import {
     ComponentType,
 } from "discord-api-types";
 import { Client } from "../..";
-import IInteractionReplyOptions from "../IInteractionReplyOptions";
-import IInteractionRes from "../IInteractionRes";
-import { IMessageBody } from "../IMessageBody";
+import IInteractionReplyOptions from "../../interfaces/IInteractionReplyOptions";
+import IInteractionRes from "../../interfaces/IInteractionRes";
+import { IMessageBody } from "../../interfaces/IMessageBody";
 import IoCordAPIError from "../../util/IoCordAPIError";
-import Guild from "../../structures/Guild";
-import { GuildMember } from "../../structures/GuildMember";
-import IoStruct from "../../structures/IoStruct";
-import Message from "../../structures/Message";
+import Guild from "../Guild";
+import { GuildMember } from "../GuildMember";
+import IoStruct from "../IoStruct";
+import Message from "../Message";
 import WebhookClient from "./WebhookClient";
 
 export default class Interaction extends IoStruct {

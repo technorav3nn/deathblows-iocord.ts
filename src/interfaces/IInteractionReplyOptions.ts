@@ -4,7 +4,7 @@ import {
     APIMessageComponent,
     APIMessageComponentBaseInteractionData,
 } from "discord-api-types";
-import ComponentActionRowBuilder from "./interactions/ActionRowComponentBuilder";
+import ComponentActionRowBuilder from "../structures/interactions/ActionRowComponentBuilder";
 
 export default interface IInteractionReplyOptions {
     ephermeral?: boolean;

@@ -1,9 +1,9 @@
 import { APIMessageComponentInteractionData, Snowflake } from "discord-api-types";
-import IInteractionRes from "../IInteractionRes";
-import Guild from "../../structures/Guild";
-import { GuildMember } from "../../structures/GuildMember";
-import Message from "../../structures/Message";
-import { User } from "../../structures/User";
+import IInteractionRes from "./IInteractionRes";
+import Guild from "../structures/Guild";
+import { GuildMember } from "../structures/GuildMember";
+import Message from "../structures/Message";
+import { User } from "../structures/User";
 
 export default interface IMessageComponentInteractionRes extends IInteractionRes {
     message: Message;

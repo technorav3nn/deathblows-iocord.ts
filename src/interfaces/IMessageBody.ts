@@ -5,7 +5,7 @@ import {
     APIActionRowComponent,
     Snowflake,
 } from "discord-api-types";
-import ComponentActionRowBuilder from "./interactions/ActionRowComponentBuilder";
+import ComponentActionRowBuilder from "../structures/interactions/ActionRowComponentBuilder";
 
 export interface IMessageBody {
     content?: string;

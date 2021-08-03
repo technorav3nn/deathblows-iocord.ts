@@ -9,10 +9,10 @@ import {
     InteractionType,
 } from "discord-api-types";
 import { Client } from "../..";
-import IInteractionReplyOptions from "../IInteractionReplyOptions";
-import IInteractionRes from "../IInteractionRes";
+import IInteractionReplyOptions from "../../interfaces/IInteractionReplyOptions";
+import IInteractionRes from "../../interfaces/IInteractionRes";
 import IoCordAPIError from "../../util/IoCordAPIError";
-import IMessageComponentInteractionRes from "./IMessageComponentInteractionRes";
+import IMessageComponentInteractionRes from "../../interfaces/IMessageComponentInteractionRes";
 import Interaction from "./Interaction";
 import WebhookClient from "./WebhookClient";
 

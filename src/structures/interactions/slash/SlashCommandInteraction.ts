@@ -4,7 +4,7 @@ import {
     APIApplicationCommandOption,
 } from "discord-api-types";
 import { Client } from "../../..";
-import ISlashCommandInteractionRes from "../../ISlashCommandInteractionRes";
+import ISlashCommandInteractionRes from "../../../interfaces/ISlashCommandInteractionRes";
 import Interaction from "../Interaction";
 import WebhookClient from "../WebhookClient";
 import SlashCommandOptionManager from "./SlashCommandOptionManager";

@@ -1,5 +1,5 @@
 import { APIMessageComponent, ComponentType } from "discord-api-types";
-import ISelectMenuOption from "../ISelectMenuOption";
+import ISelectMenuOption from "../../interfaces/ISelectMenuOption";
 
 export default class BaseComponent {
     public custom_id: string;
