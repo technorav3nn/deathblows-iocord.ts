@@ -1,6 +1,6 @@
 import { APISelectMenuComponent, ComponentType } from "discord-api-types";
-import ISelectMenu from "../../interfaces/ISelectMenu";
-import ISelectMenuOption from "../../interfaces/ISelectMenuOption";
+import ISelectMenu from "../ISelectMenu";
+import ISelectMenuOption from "../ISelectMenuOption";
 import BaseComponent from "./BaseComponent";
 
 export default class SelectMenuComponentBuilder extends BaseComponent {
@@ -15,11 +15,11 @@ export default class SelectMenuComponentBuilder extends BaseComponent {
         if (data) {
             this.type = 3;
             this.disabled = data.disabled || false;
-            this.maxValues = data.max_values || 0;
-            this.minValues = data.min_values || 0;
+            this.maxValues = data.max_values || 1;
+            this.minValues = data.min_values || 1;
             this.options = data.options || [];
-            this.placeholder = data.placeholder || null;
-            this.custom_id = data.custom_id || "asfgsdfgsdfg";
+            this.placeholder = data.placeholder || "Make a selection";
+            this.custom_id = data.custom_id;
         }
     }
 

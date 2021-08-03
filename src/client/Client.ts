@@ -3,6 +3,7 @@ import { IClient } from "../interfaces/IClient";
 import IRestClient from "../interfaces/IRestClient";
 import RestClient from "../RestClient";
 import {
+    APIApplication,
     APIChannel,
     APIMessage,
     RESTPostAPIChannelMessageJSONBody,
@@ -23,6 +24,7 @@ class Client extends EventEmitter implements IClient {
     public ws: any;
 
     public cache: Cache;
+    public application: APIApplication;
 
     [x: string]: any;
 

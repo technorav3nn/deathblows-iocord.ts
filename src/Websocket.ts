@@ -5,12 +5,14 @@ import { GatewayOpCodes as Opcodes } from "./enums/GATEWAY_OPS";
 import Message from "./structures/Message";
 import { Client } from "./client/Client";
 import {
+    APIApplicationCommand,
     APIApplicationCommandInteractionData,
     APIChannel,
     APIGuild,
     APIInteraction,
     APIMessage,
     APIMessageComponentInteractionData,
+    InteractionType,
     RESTPostAPIChannelMessageJSONBody,
     Snowflake,
 } from "discord-api-types";
@@ -21,14 +23,16 @@ import { User } from "./structures/User";
 import { GuildMember } from "./structures/GuildMember";
 import IInteractionRes from "./interfaces/IInteractionRes";
 import { IMessageBody } from "./interfaces/IMessageBody";
-import Interaction from "./structures/interactions/Interaction";
+import Interaction from "./interfaces/interactions/Interaction";
+import MessageComponentInteraction from "./interfaces/interactions/MessageComponentInteraction";
+import SlashCommandInteraction from "./interfaces/interactions/slash/SlashCommandInteraction";
 
 export class Websocket extends EventEmitter {
     public client: Client;
     public isConnected: boolean;
     private ws: WebSocket;
     public lastEvent: string | object;
-    public lastHeartBeat: number;
+    public lastHeartBeat: number = Date.now();
 
     constructor(client: Client) {
         super();
@@ -50,6 +54,7 @@ export class Websocket extends EventEmitter {
         //if (!this.client.isConnected) return;
 
         setInterval(() => {
+            this.lastHeartBeat = Date.now() - this.lastHeartBeat;
             this.ws.send(JSON.stringify({ op: 1, d: null }));
         }, interval - 3000); // we add this to make sure, incase its a bit late (hence the "-3000")
     }
@@ -95,6 +100,8 @@ export class Websocket extends EventEmitter {
                     if (t === "READY") {
                         this.client.emit("ready", res.d);
                         console.log("DEBUG: READY!");
+                        this.client.application = res.d.application;
+                        console.log("DEBUG: GOT APPLICATION FOR ClIENT!");
                     } else if (t === "MESSAGE_CREATE") {
                         const MessageData = new Message({
                             client: this.client,
@@ -143,39 +150,73 @@ export class Websocket extends EventEmitter {
                         const interaction: APIInteraction = res.d;
                         const tokenAuth = interaction.token;
 
-                        const MessageInter = new Message({
-                            client: this.client,
-                            data: interaction.message,
-                        });
-                        const memberInter = this.client.cache.members.get(
-                            interaction.member.user.id
-                        );
+                        if (interaction.type === InteractionType.MessageComponent) {
+                            const MessageInter = new Message({
+                                client: this.client,
+                                data: interaction.message,
+                            });
+                            const memberInter = this.client.cache.members.get(
+                                interaction.member.user.id
+                            );
 
-                        const guild: APIGuild = await this.client.rest.get(
-                            `/guilds/${interaction.guild_id}`
-                        );
-                        const toEmit = new Interaction(this.client, {
-                            message:
-                                this.client.messages.get(interaction.message.id) || MessageInter,
-                            member:
-                                this.client.cache.members.get(interaction.member.user.id) ||
-                                memberInter,
-                            id: interaction.id,
-                            guild:
-                                this.client.cache.guilds.get(guild.id) ||
-                                new Guild({ client: this.client, data: guild }),
-                            data: interaction.data,
-                            application: { id: interaction.application_id, token: tokenAuth },
-                            user:
-                                this.client.cache.users.get(interaction.member.user.id) ||
-                                new User(
-                                    this.client,
-                                    interaction.member.user,
-                                    interaction.member.user.id
-                                ),
-                        });
+                            const guild: APIGuild = await this.client.rest.get(
+                                `/guilds/${interaction.guild_id}`
+                            );
+                            const toEmit = new MessageComponentInteraction(this.client, {
+                                message:
+                                    this.client.messages.get(interaction.message.id) ||
+                                    MessageInter,
+                                member:
+                                    this.client.cache.members.get(interaction.member.user.id) ||
+                                    memberInter,
+                                id: interaction.id,
+                                guild:
+                                    this.client.cache.guilds.get(guild.id) ||
+                                    new Guild({ client: this.client, data: guild }),
+                                data: res.d.data,
+                                application: { id: interaction.application_id, token: tokenAuth },
+                                user:
+                                    this.client.cache.users.get(interaction.member.user.id) ||
+                                    new User(
+                                        this.client,
+                                        interaction.member.user,
+                                        interaction.member.user.id
+                                    ),
+                                type: interaction.type,
+                                componentType: interaction.data.component_type,
+                            });
 
-                        this.client.emit("interactionCreate", toEmit);
+                            this.client.emit("interactionCreate", toEmit);
+                        }
+                        if (interaction.type === InteractionType.ApplicationCommand) {
+                            const memberInter = this.client.cache.members.get(
+                                interaction.member.user.id
+                            );
+                            const guild: APIGuild = await this.client.rest.get(
+                                `/guilds/${interaction.guild_id}`
+                            );
+                            const toEmit = new SlashCommandInteraction(this.client, {
+                                member:
+                                    this.client.cache.members.get(interaction.member.user.id) ||
+                                    memberInter,
+                                id: interaction.id,
+                                guild:
+                                    this.client.cache.guilds.get(guild.id) ||
+                                    new Guild({ client: this.client, data: guild }),
+                                data: res.d.data,
+                                application: { id: interaction.application_id, token: tokenAuth },
+                                user:
+                                    this.client.cache.users.get(interaction.member.user.id) ||
+                                    new User(
+                                        this.client,
+                                        interaction.member.user,
+                                        interaction.member.user.id
+                                    ),
+                                type: interaction.type,
+                                name: interaction.data.name,
+                            });
+                            this.client.emit("interactionCreate", toEmit);
+                        }
                     }
                     break;
                 }

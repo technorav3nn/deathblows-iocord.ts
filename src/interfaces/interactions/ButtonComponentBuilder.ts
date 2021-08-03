@@ -4,8 +4,9 @@ import {
     APIButtonComponentWithURL,
 } from "discord-api-types";
 import { Client } from "../..";
-import IInteractionRes from "../../interfaces/IInteractionRes";
+import IInteractionRes from "../IInteractionRes";
 import BaseComponent from "./BaseComponent";
+import Interaction from "./Interaction";
 
 export default class ButtonComponentBuilder extends BaseComponent {
     public style: number;
@@ -39,10 +40,24 @@ export default class ButtonComponentBuilder extends BaseComponent {
         this.custom_id = id;
         return this;
     }
-    onClick(cb: (interaction: IInteractionRes) => any, disposeTime: number, client: Client) {
-        client.on("interactionCreate", cb);
+    /**
+     * @deprecated Use interactionCreate event instead
+     * @todo Create a better version
+     */
+    onClick(cb: (interaction: Interaction) => any, disposeTime: number, client: Client) {
+        client.on("interactionCreate", (i) => {
+            if (i.data.custom_id === this.custom_id) {
+                return;
+            }
+            cb(i);
+        });
         setTimeout(() => {
-            client.removeListener("interactionCreate", cb);
+            client.removeListener("interactionCreate", (i) => {
+                if (i.data.custom_id === this.custom_id) {
+                    return;
+                }
+                cb(i);
+            });
         }, disposeTime);
         return this;
     }

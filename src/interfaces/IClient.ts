@@ -3,6 +3,7 @@ import WebSocket from "ws";
 
 import EventEmitter from "events";
 import Cache from "../structures/Cache";
+import { APIApplication } from "discord-api-types";
 
 export interface IClient {
     [x: string]: any;
@@ -11,6 +12,7 @@ export interface IClient {
 
     isConnected: boolean;
 
+    application: APIApplication;
     ws: WebSocket;
     rest: IRestClient;
     cache: Cache;

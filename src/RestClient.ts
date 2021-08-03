@@ -74,7 +74,6 @@ export default class RestClient implements IRestClient {
                 body: JSON.stringify(data),
             });
             const json = await res.json();
-            console.log(json.errors.components["1"].components["0"].custom_id);
             return json;
         } catch (err) {
             return err;

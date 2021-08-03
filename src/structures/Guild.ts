@@ -1,6 +1,7 @@
-import { APIGuild, Snowflake } from "discord-api-types";
+import { APIGuild, RESTPostAPIApplicationCommandsResult, Snowflake } from "discord-api-types";
 import { Client } from "../client/Client";
 import { IoSet } from "../util/IoSet";
+import GuildSlashCommandManager from "../interfaces/interactions/slash/SlashCommandManager";
 import IoStruct from "./IoStruct";
 import TextBasedChannel from "./TextBasedChannel";
 
@@ -20,10 +21,15 @@ export default class Guild extends IoStruct {
     public guildVanityUrl: string;
     public splashHash: string;
     public channels: IoSet<Snowflake, TextBasedChannel> = new IoSet();
+    public commands: GuildSlashCommandManager<RESTPostAPIApplicationCommandsResult>;
 
     constructor({ client, data }: { client: Client; data: APIGuild }) {
         super(data.id);
 
+        this.commands = new GuildSlashCommandManager<RESTPostAPIApplicationCommandsResult>(
+            client,
+            data.id
+        );
         this.client = client;
         this.data = data;
         this.memberCount = data.member_count;
@@ -50,6 +56,5 @@ export default class Guild extends IoStruct {
                 );
             }
         }
-        //this.roles = data.roles
     }
 }
